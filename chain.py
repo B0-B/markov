@@ -324,23 +324,3 @@ class sequence:
 
         # update mean message length from persistent mean
         self.db['meanLength'] = (self.db['meanLength'] + len(msg)/float(self.db['messages'])) * self.db['messages']/(self.db['messages'] + 1)
-
-    
-
-
-c = sequence()
-c.update("alles was ich weiss ist, dass ich nichts weiss.")
-c.update("alles was zählt ist dabei zu sein.")
-c.update("digga du bist ein lauch")
-c.update("4lyfe bro")
-c.update("Yo was geht morgen holen wir quidditch?")
-c.update("Alle meine entchen schwimmen auf dem see")
-c.update("gehen wir morgen ins kino")
-c.update("immer noch keinen job")
-c.update("was für ein scheiss")
-c.update("gestern habe ich programmiert was ging bei dir")
-c.update("oh mann gar kein bock, was machst du morgen gehn wir zu mir")
-c.update("was wollen wir machen später")
-c.update("später chickendinner?")
-print(c.generate("yo", "was", "wollen"))
-
