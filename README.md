@@ -54,6 +54,7 @@ The output looks like he has thrown some sentences together but actually the tex
 <br>
 
 ## sequence completion
+We want to have a look at general sequences which is straight forward by and we want to have a closer look into the ```next``` function.
 Consider a winning/loosing streak of a sports team
 ```python
 priorGames = ['win', 'defeat', 'defeat', 'win', 'defeat', 'win', 'defeat', 'win', 'win']
@@ -65,5 +66,30 @@ One may be interested how this streak will continue or be 'completed'. For this 
 print(seq.next(*priorGames)) # use * to unpack the list into positional arguments
 ```
 ```
-~$ 
+~$ []
 ```
+
+an empty list is returned! This is where you have to understand the program's architecture a bit: it cannot give a recommendation based of an unknown sequence as two wins never occured in a row! (see priorGames). This can be fixed with the ```improvise``` argument which fills such knowledge gaps with prior or more general knowledge
+
+```python
+# seq.next(*priorGames[-2:]) == seq.next(*priorGames) => True
+print(seq.next(*priorGames, improvise=True)) # use * to unpack the list into positional arguments
+```
+```
+~$ [('defeat', 0.4444444444444444), ('win', 0.5555555555555556)]
+```
+The return array is always sorted by probability, the return shows that winning is more likely with ~5% advantage or with 55.6%.
+But what if we are interested in an arbitrary last sequence e.g. the last two games were defeats (the knwoledge still refers to priorGames)
+```python
+print(seq.next('defeat', 'win' improvise=True)) 
+```
+```
+~$ [('.', 0.0), ('win', 0.18518518518518517), ('defeat', 0.2962962962962963)]
+```
+Note: improvise is not necessary anymore as this arrangement is known.
+The '.' accounts for the possibility that this sequence ends here which is 0 as we used ```trainSeq``` if we would have used normal training for speech then this dot indicates the probability that the sentence terminates here. Also the probabilities do not add up to 1 anymore - this is due to the prior probabilities which were mixed in which breaks the normalization. Anyway the chain is sure that this will be a defeat!
+
+<br>
+
+Now with the understanding of ```next``` one could think of a recursive call to generate more than one state. This is ```generate``` - it calls ```next``` recursively.
+So imagine we want to know how the next 5 games will turn out, then generate samples according to the probability of next.

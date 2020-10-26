@@ -6,7 +6,7 @@ class sequence:
     '''
     Sequential Markov chain implementation for e.g.
     a text or bit generation/completion/suggestion. This algorithm
-    remembers/learns to sequences from training material
+    remembers/learns sequences from training material
     like a text messages from a chat, sequence of wins/lose
     sequences in sport results and so on. It can then be 
     used to either generate random new sequences according 
@@ -18,7 +18,7 @@ class sequence:
     # example filling method
     db_template = {
         "words": {
-            "weight": 6,    
+            "weight": 0,    
             "": {
                 "weight": 1,
                 "yo": {
@@ -59,7 +59,7 @@ class sequence:
     # object variables
     punctuations = '''"'!?.,;+/:'''
 
-    def generate(self, *sequence, length=None, randomize=False):
+    def generate(self, *sequence, length=None, gapFill=False):
 
         # decide on provided sequence
 
@@ -86,7 +86,6 @@ class sequence:
         else:
 
             sentence = list(sequence)
-            print("sentence", sentence)
 
 
         # get new words by markov chain procedure
@@ -95,7 +94,7 @@ class sequence:
             new = self.sample(self.next(sentence[-2], sentence[-1]))
 
             # no sequential suggestions
-            if randomize and new == "":
+            if gapFill and new == "":
 
                 # sample randomly from dictionary
                 new = self.sample( list(self.db["dictionary"].items()) )
@@ -109,7 +108,7 @@ class sequence:
                 break
             else:
                 # check for the length
-                if randomize and len(sentence) > 2*self.db["meanLength"]:
+                if gapFill and len(sentence) > 2*self.db["meanLength"]:
                     u = np.random.uniform(0, 1)
                     if u < 0.3:
                         sentence.append(".")
@@ -122,7 +121,7 @@ class sequence:
 
         return ' '.join(sentence)
 
-    def next(self, *lastTwoWords):
+    def next(self, *lastTwoWords, improvise=False):
 
         '''
         Returns a prediction of words sorted by their probability to occur.
@@ -144,19 +143,19 @@ class sequence:
             N = self.db["words"][""]["weight"]
 
         else:
-
+            #print('check', self.db["words"]['win']['win'])
             # check if the words are known to the data base
             if lastTwoWords[-2] not in self.db["words"]:
-                return []
+                unsortedTuples = []
             else:
                 if lastTwoWords[-1] not in self.db["words"][lastTwoWords[-2]]:
-                    return []
+                    unsortedTuples = []
+                else:
+                    # if known do
+                    unsortedTuples = list(self.db["words"][lastTwoWords[-2]][lastTwoWords[-1]].items())
 
-            # if known do
-            unsortedTuples = list(self.db["words"][lastTwoWords[-2]][lastTwoWords[-1]].items())
-
-            # get the partition size
-            N = self.db["words"][lastTwoWords[-2]][lastTwoWords[-1]]["weight"]
+                    # get the partition size
+                    N = self.db["words"][lastTwoWords[-2]][lastTwoWords[-1]]["weight"]
 
         # apply priors to the unsorted tuple set
         unsortedTuplesWithPriors = []
@@ -164,6 +163,16 @@ class sequence:
             tuple = unsortedTuples[i]
             if tuple[0] != 'weight': # exclude the weight as it is no word
                 unsortedTuplesWithPriors.append( (tuple[0], tuple[1]["weight"]/N * self.prior(tuple[0])) )
+
+        # imporvise when no sequence matches
+        if improvise and len(unsortedTuplesWithPriors) == 0:
+
+            unsortedTuplesWithPriors = list(self.db['dictionary'].items())
+            # normalize
+            for i in range(len(unsortedTuplesWithPriors)):
+                unsortedTuplesWithPriors[i] = (unsortedTuplesWithPriors[i][0], self.prior(unsortedTuplesWithPriors[i][0]))
+                
+            print(unsortedTuplesWithPriors)
 
         # sort tuples
         sortedTuplesWithPriors = self.sort(unsortedTuplesWithPriors)
@@ -350,5 +359,6 @@ class sequence:
 s = sequence()
 priorGames = ['win', 'defeat', 'defeat', 'win', 'defeat', 'win', 'defeat', 'win', 'win']
 s.trainSeq(priorGames)
-print(s.db)
-print(s.next(*priorGames[-2:]))
+
+print(s.next('defeat', 'win', improvise=True))
+
