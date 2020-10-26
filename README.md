@@ -70,7 +70,7 @@ print(seq.next(*priorGames)) # use * to unpack the list into positional argument
 ~$ []
 ```
 
-an empty list is returned! This is where you have to understand the program's architecture a bit: it cannot give a recommendation based of an unknown sequence as two wins never occured in a row! (see priorGames). This can be fixed with the ```improvise``` argument which fills such knowledge gaps with prior or more general knowledge
+an empty list is returned! This is where the program's architecture comes in: it cannot give a recommendation based on an unknown sequence as two wins never occured in a row! (see priorGames). This can be fixed with the ```improvise``` argument which fills such knowledge gaps with prior or more general estimations. This only triggers when there is no sequence probability
 
 ```python
 # seq.next(*priorGames[-2:]) == seq.next(*priorGames) => True
@@ -79,7 +79,7 @@ print(seq.next(*priorGames, improvise=True)) # use * to unpack the list into pos
 ```
 ~$ [('defeat', 0.4444444444444444), ('win', 0.5555555555555556)]
 ```
-The return array is always sorted by probability, the return shows that winning is more likely with ~5% advantage or with 55.6%.
+The returned array is always sorted by probability, the return shows that winning is more likely with a ~5% advantage or with 55.6%.
 But what if we are interested in an arbitrary last sequence e.g. the last two games were defeats (the knwoledge still refers to priorGames)
 ```python
 print(seq.next('defeat', 'win' improvise=True)) 
@@ -92,7 +92,7 @@ The '.' accounts for the possibility that this sequence ends here which is 0 as 
 
 <br>
 
-Now with the understanding of ```next``` one could think of a recursive call to generate more than one state. This is ```generate``` - it calls ```next``` recursively.
+Now with the understanding of ```next``` one could think of recursive calls to generate more than one state. This is ```generate``` - it calls ```next``` recursively.
 So imagine we want to know how the next 5 games will turn out, then generate samples according to the probability of next.
 
 ```python
