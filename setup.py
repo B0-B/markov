@@ -14,8 +14,6 @@ def install():
         version = body['version'],
         packages = find_packages(),
         author = body['author'],
-        author_email = body['author_email'],
-        description = body['description'],
         url = body['url'],
         install_requires = body['dependencies'].split(';'),
     )

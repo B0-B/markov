@@ -1,8 +1,8 @@
 # [Markov Chain Monte Carlo](https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo) - Automated Speech and Sequence Generation
 
 ## Background (for interested readers)
-This python project is a Markov Chain implementation which enables the user to generate speech (randomly) out of remembered training sets that can be sequences of any type whatsoever. Markov chains are used in a broad range in science. Escpecially in particle physics and quantum systems we use MCMC to simulate this system state dynamically and to derive physical responses based on a mostly informational model and probabilities. Markov chains often come in handy as they quickly adapt to a specific training and may also work with limited amounts of data. A good example for this is the simulation of the [Ising model](https://en.wikipedia.org/wiki/Ising_model#Metropolis_algorithm) which uses a specific markov chain method called [Metropolis-Hastings](https://en.wikipedia.org/wiki/Metropolis%E2%80%93Hastings_algorithm) which specificly uses (physical) Boltzmann weights. Such methods allow to sample directly according to complicated distributions i.e. common phrases have a higher likelihood to occur in a sentence and so on. <br>
-In this project a very similar approach is used but in a simpler manner. Instead of simulating/generating new physical states out of a state sequence one may generate new words based on some previous word sequence (for instance a started sentence). In addition to the sampling with markov, the training works with [Bayesian classification](https://en.wikipedia.org/wiki/Bayes_classifier) moreover Bayes is invoked for additional account of an a-priori distribution by counting how frequent words occur in general and combining this with the likelihood that it may occur in a specific sequence. This Bayesian prior is then also used during the sampling process by joining both probabilities (prior and sequential) and should lead to a "less biased" estimation/recommendation.
+This python project is a Markov Chain implementation which enables the user to generate speech (randomly) out of remembered training sets that can be sequences of any type whatsoever. Markov chains are used in a broad range in science. Escpecially in physics we use MCMC to simulate a system's state dynamically and to derive physical responses based on a mostly informational model and probabilities. Markov chains often come in handy as they quickly adapt to a specific training and may also work decently with limited amounts of data. A good example for this is the simulation of the [Ising model](https://en.wikipedia.org/wiki/Ising_model#Metropolis_algorithm) which uses a specific markov chain method called [Metropolis-Hastings](https://en.wikipedia.org/wiki/Metropolis%E2%80%93Hastings_algorithm) which specificly uses (physical) Boltzmann weights. Such methods allow to sample directly according to complicated or unaccessible distributions i.e. common phrases have a higher likelihood to be sampled and so on. <br>
+In this project a similar approach is used but in a simpler manner. Instead of simulating/generating new physical states out of an underlying state sequence one may generate new words based on some previous words/states (for instance a started sentence). In addition to markov sampling, the training works with [Bayesian classification](https://en.wikipedia.org/wiki/Bayes_classifier) moreover Bayes is invoked for additional account of an a-priori distribution by counting occurence frequencies of words regardless of the context and combining this with the likelihood that it may occur in a specific sequence. This Bayesian prior is then also used during the sampling process by joining both probabilities (prior and sequential) and should lead to a "less biased" estimation/recommendation.
 
 # Usage
 
@@ -29,7 +29,7 @@ seq.train(msg_2)
 ```
 and let this "bot" learn to speak like the chatting participants.
 
-We can also teach the chain some Shakespeare
+Teach the chain some Shakespeare
 
 ```python
 sonnet = '''Weary with toil, I haste me to my bed,
@@ -58,16 +58,24 @@ print(seq.generate())
 ```
 The output looks like some sentences were thrown together but actually the text is generated word by word based on sequential and bayesian probabilities.
 
+For begun sentences like e.g. "I would" pass the words to ``generate()``
+
+```python
+begunSentence = ["I", "would"]
+finalSentence = seq.generate(*begunSentence)
+print(finalSentence)
+```
+
 <br>
 
 ## sequence completion
-We want to have a look at general sequences which is straight forward and we want to have a closer look into the ```next``` function.
-Consider a winning/loosing streak of a sports team
+Lets have a closer look at general sequence and the ```next``` function.
+Consider a winning/loosing streak of your favourite sports team
 ```python
 priorGames = ['win', 'defeat', 'defeat', 'win', 'defeat', 'win', 'defeat', 'win', 'win']
 seq.trainSeq(priorGames) 
 ```
-One may be interested how this streak will continue or be 'completed'. For this we infer ```next```. Since the chain does not save your inputs for performance and memory reasons just pass the last two elements of your priorGames list or if lazy the whole list to next() as the function needs to know the last two occurences to continue
+one is obviously interested in the streak's continuation/completion. For this we infer ```next```. For performance and memory reasons, inputs are not saved which demands a further passing of the last two elements of your priorGames list (or if lazy the whole list) to ```next``` as the function needs to know the last two occurences to continue
 ```python
 # seq.next(*priorGames[-2:]) == seq.next(*priorGames) => True
 print(seq.next(*priorGames)) # use * to unpack the list into positional arguments
