@@ -350,10 +350,3 @@ class sequence:
         messages = text.split('.')
         for message in messages:
             self.train(message)
-
-s = sequence()
-priorGames = ['win', 'defeat', 'defeat', 'win', 'defeat', 'win', 'defeat', 'win', 'win']
-s.trainSeq(priorGames)
-print(s.generate(length=5))
-print(s.generate(length=5))
-print(s.generate(length=5))
