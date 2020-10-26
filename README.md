@@ -21,9 +21,10 @@ Simply train your chain
 seq.train(msg_1)
 seq.train(msg_2)
 ```
-and let this "bot" learn to speak like the participants.
+and let this "bot" learn to speak like the chatting participants.
 
-We can also let him learn Shakespeare
+We can also teach the chain some Shakespeare
+
 ```python
 sonnet = '''Weary with toil, I haste me to my bed,
 The dear repose for limbs with travel tired;
@@ -49,12 +50,12 @@ print(seq.generate())
 ```
 ~$ but then begins a journey in my head to work my mind for thee and for myself no quiet find .
 ```
-The output looks like he has thrown some sentences together but actually the text is generated word by word based on sequential and bayesian probabilities.
+The output looks like some sentences were thrown together but actually the text is generated word by word based on sequential and bayesian probabilities.
 
 <br>
 
 ## sequence completion
-We want to have a look at general sequences which is straight forward by and we want to have a closer look into the ```next``` function.
+We want to have a look at general sequences which is straight forward and we want to have a closer look into the ```next``` function.
 Consider a winning/loosing streak of a sports team
 ```python
 priorGames = ['win', 'defeat', 'defeat', 'win', 'defeat', 'win', 'defeat', 'win', 'win']
