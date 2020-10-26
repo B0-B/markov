@@ -56,12 +56,6 @@ class sequence:
     # object variables
     punctuations = '''"'!?.,;+/'''
 
-    def __init__(self, filePath=None):
-
-        if filePath != None:
-
-            pass
-
     def generate(self, *sequence, randomize=False):
 
         # decide on provided sequence
