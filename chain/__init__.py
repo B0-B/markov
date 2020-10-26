@@ -91,35 +91,31 @@ class sequence:
         # get new words by markov chain procedure
         while True:
 
-            new = self.sample(self.next(sentence[-2], sentence[-1]))
+            if length == None:
 
-            # no sequential suggestions
-            if gapFill and new == "":
+                new = self.sample(self.next(sentence[-2], sentence[-1], improvise=gapFill))
 
-                # sample randomly from dictionary
-                new = self.sample( list(self.db["dictionary"].items()) )
-
-            # decide when to break the sentence
-            if length != None and len(sentence) == length:
-                break
-            elif new == ".":
-                if length == None:
+                # decide when to break the sentence
+                if new == "." or new == "":
                     sentence.append(".")
                     break
                 else:
-                    pass
+                    # check for the length
+                    if gapFill and len(sentence) > 2*self.db["meanLength"]:
+                        u = np.random.uniform(0, 1)
+                        if u < 0.3:
+                            sentence.append(".")
+                            break
+                    else:
+                        sentence.append(new)
+            
             else:
-                # check for the length
-                if gapFill and len(sentence) > self.db["meanLength"]:
-                    u = np.random.uniform(0, 1)
-                    if u < 0.3:
-                        sentence.append(".")
-                        break
-                elif length == None and new == "":
-                    sentence.append(".")
-                    break
-                else:
+                new = self.sample(self.next(sentence[-2], sentence[-1], improvise=True))
+
+                if new not in ["", "."]:
                     sentence.append(new)
+                if len(sentence) == length:
+                    break
 
         return ' '.join(sentence)
 
@@ -173,8 +169,6 @@ class sequence:
             # normalize
             for i in range(len(unsortedTuplesWithPriors)):
                 unsortedTuplesWithPriors[i] = (unsortedTuplesWithPriors[i][0], self.prior(unsortedTuplesWithPriors[i][0]))
-                
-            print(unsortedTuplesWithPriors)
 
         # sort tuples
         sortedTuplesWithPriors = self.sort(unsortedTuplesWithPriors)
@@ -355,7 +349,6 @@ class sequence:
             text = '.'.join(text.split(p))
         messages = text.split('.')
         for message in messages:
-            print(message)
             self.train(message)
 
 s = sequence()
