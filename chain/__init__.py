@@ -16,7 +16,7 @@ class sequence:
     '''
 
     # example filling method
-    db = {
+    db_template = {
         "words": {
             "weight": 6,    
             "": {
@@ -53,11 +53,13 @@ class sequence:
         # remember the mean length per message
         "meanLength": 4,
     }
+    db = dict(db_template) # use a template copy
+
 
     # object variables
     punctuations = '''"'!?.,;+/:'''
 
-    def generate(self, *sequence, randomize=False):
+    def generate(self, *sequence, length=None, randomize=False):
 
         # decide on provided sequence
 
@@ -99,12 +101,13 @@ class sequence:
                 new = self.sample( list(self.db["dictionary"].items()) )
 
             # decide when to break the sentence
-            if new == ".":
+            if length != None:
+                if len(sentence) == length:
+                    break
+            elif new == ".":
                 sentence.append(".")
                 break
             else:
-                
-                
                 # check for the length
                 if randomize and len(sentence) > 2*self.db["meanLength"]:
                     u = np.random.uniform(0, 1)
@@ -236,7 +239,7 @@ class sequence:
 
         return sorted
 
-    def train(self, message=str()):
+    def train(self, message=str(), endings=True):
 
         # preprocess the message
         for p in self.punctuations: # remove punctuations
@@ -264,9 +267,11 @@ class sequence:
                     self.db["words"][""][w]["weight"] = self.db["words"][""][w]["weight"] + 1
                 else:
                     self.db["words"][""][w] = {"weight": 1, ".": {"weight": 0}}
-
-                if len(msg) == i+1: # the first word is the  only word
-                    self.db["words"][""][w]["."]["weight"] = self.db["words"][""][w]["."]["weight"] + 1
+                
+                # if endings are enabled
+                if endings:
+                    if len(msg) == i+1: # the first word is the  only word
+                        self.db["words"][""][w]["."]["weight"] = self.db["words"][""][w]["."]["weight"] + 1
 
             elif len(msg) == 1:
 
@@ -276,8 +281,10 @@ class sequence:
                 else:
                     self.db["words"][""][msg[-1]][w] = {"weight": 1, ".": {"weight": 0}}
 
-                if len(msg) == i+1: # last word
-                    self.db["words"][msg[-1]][w]["."]["weight"] = self.db["words"][msg[-1]][w]["."]["weight"] + 1
+                # if endings are enabled
+                if endings:
+                    if len(msg) == i+1: # last word
+                        self.db["words"][msg[-1]][w]["."]["weight"] = self.db["words"][msg[-1]][w]["."]["weight"] + 1
 
             else:
 
@@ -299,8 +306,10 @@ class sequence:
                 else:
                     self.db["words"][msg[-2]][msg[-1]][w] = {"weight": 1}
 
-                if len(msg) == i+1: # last word
-                    self.db["words"][msg[-1]][w]["."]["weight"] = self.db["words"][msg[-1]][w]["."]["weight"] + 1
+                # if endings are enabled
+                if endings:
+                    if len(msg) == i+1: # last word
+                        self.db["words"][msg[-1]][w]["."]["weight"] = self.db["words"][msg[-1]][w]["."]["weight"] + 1
 
             # add word to msg
             msg.append(w)
@@ -321,6 +330,12 @@ class sequence:
         # update mean message length from persistent mean
         self.db['meanLength'] = (self.db['meanLength'] + len(msg)/float(self.db['messages'])) * self.db['messages']/(self.db['messages'] + 1)
 
+    def trainSeq(self, sequence):
+        '''
+        Sequence must be a list object.
+        '''
+        self.train(' '.join(sequence), endings=False)
+
     def trainText(self, text):
 
         messages = []
@@ -333,20 +348,7 @@ class sequence:
             self.train(message)
 
 s = sequence()
-text = '''Weary with toil, I haste me to my bed,
-The dear repose for limbs with travel tired;
-But then begins a journey in my head,
-To work my mind, when body’s work’s expired:
-For then my thoughts (from far where I abide)
-Intend a zealous pilgrimage to thee,
-And keep my drooping eyelids open wide,
-Looking on darkness which the blind do see:
-Save that my soul’s imaginary sight
-Presents thy shadow to my sightless view,
-Which, like a jewel hung in ghastly night,
-Makes black night beauteous and her old face new.
-Lo, thus, by day my limbs, by night my mind,
-For thee, and for myself, no quiet find.'''
-s.trainText(text)
-
-print(s.generate())
+priorGames = ['win', 'defeat', 'defeat', 'win', 'defeat', 'win', 'defeat', 'win', 'win']
+s.trainSeq(priorGames)
+print(s.db)
+print(s.next(*priorGames[-2:]))
