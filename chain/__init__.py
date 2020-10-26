@@ -55,7 +55,7 @@ class sequence:
     }
 
     # object variables
-    punctuations = '''"'!?.,;+/'''
+    punctuations = '''"'!?.,;+/:'''
 
     def generate(self, *sequence, randomize=False):
 
@@ -236,12 +236,13 @@ class sequence:
 
         return sorted
 
-    def update(self, message=str()):
+    def train(self, message=str()):
 
         # preprocess the message
-        for p in self.punctuations:
+        for p in self.punctuations: # remove punctuations
             if p in message:
                 message = ''.join(message.split(p))
+        message = ' '.join(message.split('\n')) # remove linebreaks
         message = message.split(' ')
 
         # iterate through message words
@@ -319,3 +320,33 @@ class sequence:
 
         # update mean message length from persistent mean
         self.db['meanLength'] = (self.db['meanLength'] + len(msg)/float(self.db['messages'])) * self.db['messages']/(self.db['messages'] + 1)
+
+    def trainText(self, text):
+
+        messages = []
+        # split the text into messages=sentences
+        for p in ['!', '?', '...', '..', ';']: # exchange punctuations with
+            text = '.'.join(text.split(p))
+        messages = text.split('.')
+        for message in messages:
+            print(message)
+            self.train(message)
+
+s = sequence()
+text = '''Weary with toil, I haste me to my bed,
+The dear repose for limbs with travel tired;
+But then begins a journey in my head,
+To work my mind, when body’s work’s expired:
+For then my thoughts (from far where I abide)
+Intend a zealous pilgrimage to thee,
+And keep my drooping eyelids open wide,
+Looking on darkness which the blind do see:
+Save that my soul’s imaginary sight
+Presents thy shadow to my sightless view,
+Which, like a jewel hung in ghastly night,
+Makes black night beauteous and her old face new.
+Lo, thus, by day my limbs, by night my mind,
+For thee, and for myself, no quiet find.'''
+s.trainText(text)
+
+print(s.generate())
