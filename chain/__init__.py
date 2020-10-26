@@ -100,20 +100,22 @@ class sequence:
                 new = self.sample( list(self.db["dictionary"].items()) )
 
             # decide when to break the sentence
-            if length != None:
-                if len(sentence) == length:
-                    break
-            elif new == ".":
-                sentence.append(".")
+            if length != None and len(sentence) == length:
                 break
+            elif new == ".":
+                if length == None:
+                    sentence.append(".")
+                    break
+                else:
+                    pass
             else:
                 # check for the length
-                if gapFill and len(sentence) > 2*self.db["meanLength"]:
+                if gapFill and len(sentence) > self.db["meanLength"]:
                     u = np.random.uniform(0, 1)
                     if u < 0.3:
                         sentence.append(".")
                         break
-                elif new == "":
+                elif length == None and new == "":
                     sentence.append(".")
                     break
                 else:
@@ -359,6 +361,6 @@ class sequence:
 s = sequence()
 priorGames = ['win', 'defeat', 'defeat', 'win', 'defeat', 'win', 'defeat', 'win', 'win']
 s.trainSeq(priorGames)
-
-print(s.next('defeat', 'win', improvise=True))
-
+print(s.generate(length=5))
+print(s.generate(length=5))
+print(s.generate(length=5))

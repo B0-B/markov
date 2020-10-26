@@ -93,3 +93,17 @@ The '.' accounts for the possibility that this sequence ends here which is 0 as 
 
 Now with the understanding of ```next``` one could think of a recursive call to generate more than one state. This is ```generate``` - it calls ```next``` recursively.
 So imagine we want to know how the next 5 games will turn out, then generate samples according to the probability of next.
+
+```python
+# call it more times
+print(seq.generate(length=5)) 
+print(seq.generate(length=5)) 
+print(seq.generate(length=5)) 
+```
+```
+~$ win defeat win defeat defeat
+   win defeat defeat win win
+   win defeat defeat win win
+```
+
+If a length is provided in sequence or speech generation this will be respected first, otherwise the length will be determined by probability. The upper three generated sequences are from the same distribution model but still random.
