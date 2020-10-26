@@ -5,6 +5,12 @@ This python project is a Markov Chain implementation which enables the user to g
 In this project a very similar approach is used but in a simpler manner. Instead of simulating/generating new physical states out of a state sequence one may generate new words based on some previous word sequence (for instance a started sentence). In addition to the sampling with markov, the training works with [Bayesian classification](https://en.wikipedia.org/wiki/Bayes_classifier) moreover Bayes is invoked for additional account of an a-priori distribution by counting how frequent words occur in general and combining this with the likelihood that it may occur in a specific sequence. This Bayesian prior is then also used during the sampling process by joining both probabilities (prior and sequential) and should lead to a "less biased" estimation/recommendation.
 
 # Usage
+
+## install
+```
+~/markov$ pip3 install .
+```
+
 ## import
 ```python
 from markov.chain import sequence
