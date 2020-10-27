@@ -57,7 +57,7 @@ class sequence:
 
 
     # object variables
-    punctuations = '''"'!?.,;+/:'''
+    punctuations = '''"'!?.,;+/:()'''
 
     def generate(self, *sequence, length=None, gapFill=False):
 
