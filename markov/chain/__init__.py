@@ -59,6 +59,11 @@ class sequence:
     # object variables
     punctuations = '''"'!?.,;+/:()'''
 
+    def forgetAll(self):
+
+        # reinitialize data base
+        self.db = dict(self.db_template)
+
     def generate(self, *sequence, length=None, gapFill=False):
 
         # decide on provided sequence
