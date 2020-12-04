@@ -3,6 +3,6 @@
     "version" : "1.0",
     "author" : "B0-B",
     "url" : "https://github.com/B0-B/markov",
-    "licence" : "GNU",
+    "licence" : "MIT",
     "dependencies" : "numpy"
 }
