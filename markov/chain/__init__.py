@@ -354,4 +354,5 @@ class sequence:
             text = '.'.join(text.split(p))
         messages = text.split('.')
         for message in messages:
+            print(message)
             self.train(message)
